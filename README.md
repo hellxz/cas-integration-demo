@@ -7,7 +7,7 @@
 - [CAS学习笔记二：CAS单点登录流程](https://blog.csdn.net/u012586326/article/details/122320562)
 - [CAS学习笔记三：SpringBoot自动/手动配置方式集成CAS单点登录](https://blog.csdn.net/u012586326/article/details/122331348)
 - [CAS学习笔记四：CAS单点登出流程](https://blog.csdn.net/u012586326/article/details/122568510)
-- [CAS学习笔记五：SpringBoot自动/手动配置方式集成CAS单点登出]()
+- [CAS学习笔记五：SpringBoot自动/手动配置方式集成CAS单点登出](https://blog.csdn.net/u012586326/article/details/122572693)
 
 ## 快速开始
 使用 IDE 以 `Maven` 方式引入最外层 `pom.xml`，修改 `application.properties`，按需启动模块即可。
