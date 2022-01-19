@@ -1,19 +1,23 @@
 package com.hellxz.cas;
 
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.jasig.cas.client.authentication.AuthenticationFilter;
+import org.jasig.cas.client.session.SingleSignOutFilter;
+import org.jasig.cas.client.session.SingleSignOutHttpSessionListener;
 import org.jasig.cas.client.util.HttpServletRequestWrapperFilter;
 import org.jasig.cas.client.validation.Cas30ProxyReceivingTicketValidationFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 @Configuration
-public class Config {
+public class CasConfig {
     /**
      * 自定义cas服务地址
      */
@@ -27,6 +31,30 @@ public class Config {
     private String serverName;
 
     /**
+     * 监听登出事件，清除session与token之间的映射关系及CAS会话记录
+     */
+    @Bean
+    public ServletListenerRegistrationBean<EventListener> casSingleSignOutListener() {
+        ServletListenerRegistrationBean<EventListener> singleSignOutListener = new ServletListenerRegistrationBean<>();
+        singleSignOutListener.setListener(new SingleSignOutHttpSessionListener());
+        return singleSignOutListener;
+    }
+
+    @Bean
+    @Order(0)
+    public FilterRegistrationBean<SingleSignOutFilter> casSingleSignOutFilter() {
+        FilterRegistrationBean<SingleSignOutFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new SingleSignOutFilter());
+        registration.setName("CAS Single Sign Out Filter");
+        Map<String, String> initParams = new HashMap<>();
+        initParams.put("casServerUrlPrefix", casServerUrlPrefix); // CAS服务端地址，会拼接为登录地址
+        initParams.put("serverName", serverName); // 服务地址
+        registration.setInitParameters(initParams);
+        registration.addUrlPatterns("/*");
+        return registration;
+    }
+
+    /**
      * 拦截所有请求，将未携带票据与会话中无票据的请求都重定向到CAS登录地址
      */
     @Bean
@@ -38,6 +66,10 @@ public class Config {
         Map<String, String> initParams = new HashMap<>();
         initParams.put("casServerUrlPrefix", casServerUrlPrefix); // CAS服务端地址，会拼接为登录地址
         initParams.put("serverName", serverName); // 服务地址
+
+        // 自定义忽略认证的路径或表达式，这里用来免登录访问【退出登录提示】页面
+        initParams.put("ignorePattern", "/logoutPage");
+
         registration.setInitParameters(initParams);
         registration.addUrlPatterns("/*");
         return registration;
@@ -55,6 +87,7 @@ public class Config {
         Map<String, String> initParams = new HashMap<>();
         initParams.put("casServerUrlPrefix", casServerUrlPrefix); // CAS服务端地址，会拼接为服务校验地址
         initParams.put("serverName", serverName);
+        initParams.put("redirectAfterValidation", "true"); // 禁用校验通过后去除ticket重定向回来，继续请求接口
         registration.setInitParameters(initParams);
         registration.addUrlPatterns("/*");
         return registration;
