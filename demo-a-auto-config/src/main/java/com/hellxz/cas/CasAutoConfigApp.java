@@ -35,7 +35,7 @@ public class CasAutoConfigApp {
     @GetMapping("/index")
     public String index(HttpServletRequest request) {
       //@formatter:off
-        return "<h1>登录成功</h1><br><br>"
+        return "<h1>登录成功，您好 " + request.getRemoteUser() + "</h1><br><br>"
                 + "<a href=\"/logout\">退出登录</a><br><br>"
                 + "<a href=\"" + casSingleLogoutUrl + "\">全局退出登录</a>";
       //@formatter:on

@@ -87,7 +87,7 @@ public class CasConfig {
         Map<String, String> initParams = new HashMap<>();
         initParams.put("casServerUrlPrefix", casServerUrlPrefix); // CAS服务端地址，会拼接为服务校验地址
         initParams.put("serverName", serverName);
-        initParams.put("redirectAfterValidation", "true"); // 禁用校验通过后去除ticket重定向回来，继续请求接口
+        initParams.put("redirectAfterValidation", "false"); // 禁用校验通过后去除ticket重定向回来，继续请求接口
         registration.setInitParameters(initParams);
         registration.addUrlPatterns("/*");
         return registration;
